@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import bcrypt from 'bcryptjs';
 import _ from 'lodash';
-import { User, validateUser, validateLogin } from '../models/user';
+import { Staff, validateStaff, validateLogin } from '../models/staff';
 
 /**
  * @class StaffController
@@ -17,13 +17,13 @@ class StaffController {
    * @returns {json} json object with status, staff data and access token
    */
   static async createStaff(req, res, next) {
-    const { error } = validateUser(req.body);
+    const { error } = validateStaff(req.body);
     if (error) return res.status(400).json(error.details[0].message);
     try {
-      let staff = await User.findOne({ email: req.body.email });
-      if (staff) return res.status(400).json('User already exists');
+      let staff = await Staff.findOne({ email: req.body.email });
+      if (staff) return res.status(400).json('Staff already exists');
 
-      staff = new User(_.pick(req.body, ['firstname', 'lastname', 'email', 'password']));
+      staff = new Staff(_.pick(req.body, ['firstname', 'lastname', 'email', 'password']));
       const salt = await bcrypt.genSalt(10);
       staff.password = await bcrypt.hash(staff.password, salt);
       await staff.save();
@@ -50,7 +50,7 @@ class StaffController {
    */
   static async getAllStaff(req, res, next) {
     try {
-      const staffs = await User.find().sort('firstname');
+      const staffs = await Staff.find().sort('firstname');
       return res
         .status(200)
         .json({
@@ -73,11 +73,11 @@ class StaffController {
    * @returns {json} json object with updated staff profile data
    */
   static async updateStaff(req, res, next) {
-    const { error } = validateUser(req.body);
+    const { error } = validateStaff(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     try {
-      const staff = await User.findByIdAndUpdate(
+      const staff = await Staff.findByIdAndUpdate(
         req.params.id,
         { firstname: req.body.firstname },
         { lastname: req.body.lastname },
@@ -106,7 +106,7 @@ class StaffController {
    */
   static async deleteStaff(req, res, next) {
     try {
-      const staff = await User.findByIdAndRemove(req.params.id);
+      const staff = await Staff.findByIdAndRemove(req.params.id);
 
       if (!staff) return res.status(404).send('The user with the given Id does not exists');
 
@@ -127,7 +127,7 @@ class StaffController {
    */
   static async getOneStaff(req, res, next) {
     try {
-      const staff = await User.findById(req.params.id);
+      const staff = await Staff.findById(req.user._id);
 
       if (!staff) return res.status(404).send('The user with the given Id does not exists');
 
@@ -151,7 +151,7 @@ class StaffController {
     if (error) return res.status(400).send(error.details[0].message);
 
     try {
-      const staff = await User.findOne({ email: req.body.email });
+      const staff = await Staff.findOne({ email: req.body.email });
       if (!staff) return res.status(400).json('invalid email or password');
 
       const validPassword = await bcrypt.compare(req.body.password, staff.password);
