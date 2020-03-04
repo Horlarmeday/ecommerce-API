@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 import winston from 'winston';
 
-export default function(err, req, res) {
-  winston.error(err.message, err);
-  res.status(500).send('Something failed');
+export default function(error, req, res, next) {
+  winston.error(error.message, error);
+  res.status(500).json(error.message);
 }
