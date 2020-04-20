@@ -9,6 +9,7 @@
     "start": "node dist/app.js",
     "build": "babel src --out-dir dist"
   },
+  "heroku-run-build-script": true,
   "author": "Mahmud Ajao",
   "license": "ISC",
   "devDependencies": {
