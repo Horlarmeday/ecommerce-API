@@ -7,7 +7,7 @@ router.post('/', CustomerController.createCustomer);
 router.post('/login', CustomerController.customerLogin);
 router.get('/', verify, CustomerController.getAllCustomers);
 router.get('/:id', verify, CustomerController.getOneCustomer);
-router.put('/:id', CustomerController.updateCustomer);
-router.delete('/:id', CustomerController.deleteCustomer);
+router.put('/:id', verify, CustomerController.updateCustomer);
+router.delete('/:id', verify, CustomerController.deleteCustomer);
 
 export default router;
